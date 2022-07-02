@@ -26,7 +26,7 @@ app.use(morgan("dev"));
 app.use(express.static('views'));
 
 //Routes
-app.use("/api",language) //cambio rrr
+app.use("/api",language) //cambio
 app.use("/auth", auth)
 app.use("/send", sendEmail)
 app.use("/usuario", usuario)

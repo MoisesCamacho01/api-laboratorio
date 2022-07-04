@@ -51,12 +51,12 @@ const password = async (request, response)=>{
         }
     })
 
+    var {password} = request.body;
+    var token = request.token;
+    if(password === undefined || token === undefined){
+        response.json({message: "Llena todas los datos"})
+    }
     try {
-        var {password} = request.body;
-        var token = request.token;
-        if(password === undefined || token === undefined){
-            response.json({message: "Llena todas los datos"})
-        }
         const connection = await getConnection();
 
         const result = await connection.query("UPDATE usuarios SET password_usuario=? WHERE id_usuario = ?", [password, userID]);

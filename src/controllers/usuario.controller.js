@@ -3,13 +3,13 @@ import jwt from "jsonwebtoken";
 import { request, response } from "express";
 
 const login = async (request, response)=>{
-    var {usuario, password} = request.body;
-
-    if(usuario === undefined || password === undefined){
-        response.status(400).json({message: "Llena todas las credenciales"})
-    }
-
     try {
+        var {usuario, password} = request.body;
+    
+        if(usuario === undefined || password === undefined){
+            response.status(400).json({message: "Llena todas las credenciales"})
+        }
+        
         var connection = await getConnection();
         var result = await connection.query("SELECT usuarios.id_usuario, estudiantes.identificacion_estudiante, estudiantes.correo_estudiante, usuarios.password_usuario, usuarios.tipo_usuario FROM `estudiantes`, usuarios WHERE usuarios.password_usuario = '"+password+"' AND (estudiantes.identificacion_estudiante = '"+usuario+"' OR estudiantes.correo_estudiante = '"+usuario+"') AND estudiantes.id_estudiante = usuarios.id_estudiante");
         if(result.length > 0){

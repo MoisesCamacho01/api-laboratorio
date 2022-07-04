@@ -11,7 +11,7 @@ const login = async (request, response)=>{
 
     try {
         var connection = await getConnection();
-        var result = await connection.query('SELECT * FROM usuarios WHERE identificacion_usuario=? AND password_usuario=?',[usuario, password]);
+        var result = await connection.query("SELECT usuarios.id_usuario, estudiantes.identificacion_estudiante, estudiantes.correo_estudiante, usuarios.password_usuario, usuarios.tipo_usuario FROM `estudiantes`, usuarios WHERE usuarios.password_usuario = '"+password+"' AND (estudiantes.identificacion_estudiante = '"+usuario+"' OR estudiantes.correo_estudiante = '"+usuario+"') AND estudiantes.id_estudiante = usuarios.id_estudiante");
         if(result.length > 0){
             var dataUser = {
                 id: result[0].id_usuario
@@ -34,12 +34,9 @@ const login = async (request, response)=>{
 const logout = async (request,response) =>{
     jwt.verify(request.token, 'secretKey', (error, dataUser) =>{
         if(error){
-            response.send(request.token)
+            response.json({message: error.message});
         }else{
-            response.json({
-                // dataUser,
-                message: "success"
-            });
+            response.json({message: "success"})
         }
     });
 }
@@ -54,12 +51,12 @@ const password = async (request, response)=>{
         }
     })
 
-    var {password} = request.body;
-    var token = request.token;
-    if(password === undefined || token === undefined){
-        response.json({message: "Llena todas los datos"})
-    }
     try {
+        var {password} = request.body;
+        var token = request.token;
+        if(password === undefined || token === undefined){
+            response.json({message: "Llena todas los datos"})
+        }
         const connection = await getConnection();
 
         const result = await connection.query("UPDATE usuarios SET password_usuario=? WHERE id_usuario = ?", [password, userID]);
@@ -97,19 +94,35 @@ const insertar = async(request, response)=>{
 
 		var tipo_usuario = "estudiante";
 		var celular_usuario = '0';
+        var fecha_baja = '';
 
-        const usuario = { 
-			identificacion_usuario,
-			nombre_usuario,
-			apellido_usuario,
-			tipo_usuario,
-			correo_usuario,
-			password_usuario,
-			celular_usuario,
-		};
+        
+
+        //INDENFICAR 
         const connection = await getConnection();
-        await connection.query("INSERT INTO usuarios SET ?", usuario);
-        response.json({ message: "success" });
+        const result = await connection.query('SELECT id_estudiante FROM estudiantes WHERE identificacion_estudiante=? OR correo_estudiante=?', [identificacion_usuario, correo_usuario]);
+
+        if(typeof result[0] !== 'undefined'){
+            const idUser = result[0].id_estudiante;
+            const result2 = await connection.query('SELECT id_estudiante FROM usuarios WHERE id_estudiante=?', idUser);
+            if(typeof result2[0] === 'undefined'){
+                var id_estudiante = idUser;
+                const usuario = {
+                    id_estudiante,
+                    tipo_usuario,
+                    password_usuario,
+                    celular_usuario,
+                    fecha_baja
+                };
+                await connection.query("INSERT INTO usuarios SET ?", usuario);
+                response.json({ message: "success" });
+            }else{
+                response.json({message: "El estudiante ya se encuentra registrado"});
+            }
+        }else{
+            response.json({message: "El estudiante no se encuentra"});
+        }
+
     } catch (error) {
         response.json({message: "A ocurrido un problema con tu petición, parece que el servidor no responde inténtalo mas tarde ("+error.message+")"})
     }

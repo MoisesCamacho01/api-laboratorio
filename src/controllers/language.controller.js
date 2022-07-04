@@ -4,7 +4,7 @@ const getLanguage= async(request, response)=>{
     try {
         const connection = await getConnection();
         const result = await connection.query("SELECT * FROM usuarios");
-        response.send(result);
+        response.json(result)
         
     } catch (error) {
         response.status(500);

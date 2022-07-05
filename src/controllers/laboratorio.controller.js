@@ -28,6 +28,7 @@ const computadorasDisponibles = async (request, response)=>{
             
             if(typeof result[0] !== 'undefined'){
                 var id_horario = result[0].id_horario;
+
                 const computadoras = await connection.query(`
                 SELECT computadoras.id_computadora, computadoras.tipo_computadora, computadoras.descripcion_computadora,
                 computadoras.estado_computadora, computadoras.id_laboratorio

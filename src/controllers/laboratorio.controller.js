@@ -23,15 +23,17 @@ const computadorasDisponibles = async (request, response)=>{
 
         if(typeof result[0] !== 'undefined'){
             const result = await connection.query(`
-            SELECT matriculas.id_estudiante, matriculas.id_asignacion, (SELECT horarios.hora_inicio FROM horarios WHERE horarios.id_asignacion = matriculas.id_asignacion AND horarios.fecha = '${fecha}' AND horarios.hora_inicio <= '${hora}' AND horarios.hora_fin > '${hora}' ) as hora,
-            (SELECT horarios.id_laboratorio FROM horarios WHERE horarios.id_asignacion = matriculas.id_asignacion AND horarios.fecha = '${fecha}' AND horarios.hora_inicio <= '${hora}' AND horarios.hora_fin > '${hora}') as id_laboratorio
+            SELECT matriculas.id_estudiante, matriculas.id_asignacion, (SELECT horarios.id_horario FROM horarios WHERE horarios.id_asignacion = matriculas.id_asignacion AND horarios.fecha = '${fecha}' AND horarios.hora_inicio <= '${hora}' AND horarios.hora_fin > '${hora}' ) as id_horario
             FROM matriculas WHERE matriculas.id_estudiante = ${userID}`);
             
             if(typeof result[0] !== 'undefined'){
-                var idLaboratorio = result[0].id_laboratorio;
-
+                var id_horario = result[0].id_horario;
                 const computadoras = await connection.query(`
-                SELECT computadoras.id_computadora, computadoras.tipo_computadora, computadoras.descripcion_computadora, computadoras.estado_computadora, (SELECT laboratorios.nombre_laboratorio FROM laboratorios WHERE laboratorios.id_laboratorio = ${idLaboratorio}) as nombre_laboratorio FROM registros, computadoras WHERE registros.fecha_registro = '${fecha}' AND registros.id_computadora != computadoras.id_computadora AND computadoras.id_laboratorio = ${idLaboratorio};
+                SELECT computadoras.id_computadora, computadoras.tipo_computadora, computadoras.descripcion_computadora,
+                computadoras.estado_computadora, computadoras.id_laboratorio
+                FROM computadoras
+                WHERE computadoras.id_computadora 
+                NOT IN (SELECT registros.id_computadora FROM registros WHERE registros.id_horario = ${id_horario});
                 `);
 
                 response.json(computadoras);

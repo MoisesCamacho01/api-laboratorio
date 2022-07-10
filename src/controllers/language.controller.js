@@ -6,7 +6,14 @@ const getLanguage= async(request, response)=>{
         const result = await connection.query("SELECT * FROM usuarios");
         let js = {
             "nombre":[
-                {"apellido":"casa"}
+                {
+                    "apellido":"casa",
+                    "edad":27
+                },
+                {
+                    "apellido":"Perez",
+                    "edad":28
+                }
             ],
             "msm": "bien"
         }

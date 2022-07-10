@@ -8,7 +8,7 @@ const getLanguage= async(request, response)=>{
             "nombre":result,
             "msm": "bien"
         }
-        response.json(JSON.stringify(result))
+        response.json(result)
         
     } catch (error) {
         response.status(500);

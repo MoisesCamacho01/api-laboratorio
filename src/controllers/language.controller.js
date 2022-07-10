@@ -5,9 +5,9 @@ const getLanguage= async(request, response)=>{
         const connection = await getConnection();
         const result = await connection.query("SELECT * FROM usuarios");
         let js = {
-            "nombre":{
-                "apellido":"jose"
-            },
+            "nombre":[
+                {"apellido":"jose"}
+            ],
             "msm": "bien"
         }
         response.json(js)

@@ -28,17 +28,46 @@ const computadorasDisponibles = async (request, response)=>{
             
             if(typeof result[0] !== 'undefined'){
                 var id_horario = result[0].id_horario;
+                
+                if(id_horario != null){
+                    const computadoras = await connection.query(`
+                    SELECT computadoras.id_computadora, computadoras.tipo_computadora, computadoras.descripcion_computadora,
+                    computadoras.estado_computadora, computadoras.id_laboratorio
+                    FROM computadoras
+                    WHERE computadoras.id_computadora 
+                    NOT IN (SELECT registros.id_computadora FROM registros WHERE registros.id_horario = ${id_horario});
+                    `);
 
-                const computadoras = await connection.query(`
-                SELECT computadoras.id_computadora, computadoras.tipo_computadora, computadoras.descripcion_computadora,
-                computadoras.estado_computadora, computadoras.id_laboratorio
-                FROM computadoras
-                WHERE computadoras.id_computadora 
-                NOT IN (SELECT registros.id_computadora FROM registros WHERE registros.id_horario = ${id_horario});
-                `);
+                    /*
+                    id_registro = auto
+                    id_horario
+                    fecha_registro
+                    hora_registro
+                    observaciones
+                    id_usuario
+                    id_computadora
+                    */
 
-                response.json(computadoras);
+                    let datosComputadora = [];
 
+                    computadoras.forEach(row => {
+                        let anidado = {
+                            "id_computadora": 1,
+                            "tipo_computadora": "dell",
+                            "descripcion_computadora": "Nueva",
+                            "estado_computadora": "Buena",
+                            "id_laboratorio": 1,
+                            "id_horario": id_horario,
+                            "fecha_registro": fecha,
+                            "hora_registro": hora
+                        }
+                        datosComputadora.push(anidado)
+                    });
+
+                    response.json(datosComputadora);
+                }else{
+                    response.json({message: "No se ha encontrado computadoras disponibles"})
+                }
             }else{
                 response.json({message: "A ocurrido un problema"});
             }

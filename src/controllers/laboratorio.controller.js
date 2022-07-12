@@ -100,7 +100,7 @@ const registro = async(request, response) => {
         };
         const connection = await getConnection();
         await connection.query("INSERT INTO registros SET ?", usuario);
-        response.json({ message: "success" });
+        response.json({token:"0", message: "success" });
 
     } catch (error) {
         response.json({message: "A ocurrido un problema con tu petición, parece que el servidor no responde inténtalo mas tarde ("+error.message+")"})

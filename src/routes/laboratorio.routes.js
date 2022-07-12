@@ -5,4 +5,6 @@ const router = Router();
 
 router.post('/computadorasDisponibles',funciones.verifyToken, laboratorioController.computadorasDisponibles);
 
+router.post('/registrar', laboratorioController.registro)
+
 export default router;

@@ -57,6 +57,7 @@ const computadorasDisponibles = async (request, response)=>{
                             "descripcion_computadora": "Nueva",
                             "estado_computadora": "Buena",
                             "id_laboratorio": 1,
+                            "id_usuario": userID,
                             "id_horario": id_horario,
                             "fecha_registro": fecha,
                             "hora_registro": hora
@@ -80,6 +81,33 @@ const computadorasDisponibles = async (request, response)=>{
     }
 }
 
+
+const registro = async(request, response) => {
+    try {
+        var {id_usuario, fecha_registro, id_horario, hora_registro, id_computadora, observaciones} = request.body;
+        if((id_usuario === undefined) || (id_horario === undefined) || (fecha_registro === undefined) || (hora_registro === undefined)
+        || (id_computadora === undefined) || observaciones === undefined ){
+            response.json({message: "A ocurrido un problema"});
+        };
+         
+        const usuario = {
+            id_horario,
+            fecha_registro,
+            hora_registro,
+            observaciones,
+            id_usuario,
+            id_computadora
+        };
+        const connection = await getConnection();
+        await connection.query("INSERT INTO registros SET ?", usuario);
+        response.json({ message: "success" });
+
+    } catch (error) {
+        response.json({message: "A ocurrido un problema con tu petición, parece que el servidor no responde inténtalo mas tarde ("+error.message+")"})
+    }
+}
+
 export const methods = {
-    computadorasDisponibles
+    computadorasDisponibles,
+    registro
 }

@@ -6,6 +6,7 @@ import sendEmail from "./routes/send.routes"
 import usuario from "./routes/usuario.routes"
 import estudiante from "./routes/estudiante.routes"
 import laboratorio from "./routes/laboratorio.routes"
+import carreras from "./routes/carreras.routes"
 
 //CORS
 const cors = require('cors');
@@ -33,5 +34,6 @@ app.use("/send", sendEmail)
 app.use("/usuario", usuario)
 app.use("/estudiante", estudiante)
 app.use("/laboratorio", laboratorio)
+app.use("/carreras", carreras)
 
 export default app;

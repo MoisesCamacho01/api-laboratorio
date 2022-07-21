@@ -11,7 +11,17 @@ const login = async (request, response)=>{
         }
         
         var connection = await getConnection();
-        var result = await connection.query("SELECT usuarios.id_usuario, estudiantes.identificacion_estudiante, estudiantes.correo_estudiante, usuarios.password_usuario, usuarios.tipo_usuario FROM `estudiantes`, usuarios WHERE usuarios.password_usuario = '"+password+"' AND (estudiantes.identificacion_estudiante = '"+usuario+"' OR estudiantes.correo_estudiante = '"+usuario+"') AND estudiantes.id_estudiante = usuarios.id_estudiante");
+        var cedula = await connection.query("SELECT identificacion_administrador FROM administradores WHERE identificacion_administrador = '"+usuario+"' OR correo_administrador = '"+usuario+"'")
+        var result
+        if (cedula.length>0) {
+            //BUSCAMOS RESULTADOS EN ADMINISTRADOR
+            result = await connection.query("SELECT usuarios.id_usuario, administradores.identificacion_administrador, administradores.correo_administrador, usuarios.password_usuario, usuarios.tipo_usuario FROM administradores, usuarios WHERE usuarios.password_usuario = '"+password+"' AND (administradores.identificacion_administrador = '"+usuario+"' OR administradores.correo_administrador = '"+usuario+"') AND administradores.id_administrador = usuarios.id_administrador");
+
+        } else {
+            //BUSCAMOS RESULTADOS EN ESTUDIANTE
+            result = await connection.query("SELECT usuarios.id_usuario, estudiantes.identificacion_estudiante, estudiantes.correo_estudiante, usuarios.password_usuario, usuarios.tipo_usuario FROM `estudiantes`, usuarios WHERE usuarios.password_usuario = '"+password+"' AND (estudiantes.identificacion_estudiante = '"+usuario+"' OR estudiantes.correo_estudiante = '"+usuario+"') AND estudiantes.id_estudiante = usuarios.id_estudiante");
+        }
+        
         if(result.length > 0){
             var dataUser = {
                 id: result[0].id_usuario
@@ -129,9 +139,45 @@ const insertar = async(request, response)=>{
 }
 
 
+const nivel = async (request, response)=>{
+    var userID = 0;
+    jwt.verify(request.token, 'secretKey', (error, dataUser) =>{
+        if(error){
+            response.json(error.message)
+        }else{
+            userID = dataUser.user.id;
+        }
+    })
+
+    var {usuario, password} = request.body;
+    var token = request.token;
+
+    try {
+        if(token === undefined){
+            response.json({message: "Llena todas los datos"})
+        }
+
+        const connection = await getConnection()
+        const result = await connection.query('SELECT tipo_usuario FROM usuarios WHERE id_usuario=?', userID);
+
+        if(result.length>0){
+            response.json({
+                token: result[0].tipo_usuario,
+                message: "success"
+            })
+        }else{
+            response.json({message: "Tenemos un problema con tus datos"})
+        }
+        
+    } catch (error) {
+        response.json({message: "A ocurrido un problema con tu petición, parece que el servidor no responde inténtalo mas tarde ("+error.message+")"})
+    }
+}
+
 export const methods = {
     login,
     logout,
     password,
-	insertar
+	insertar,
+    nivel
 }

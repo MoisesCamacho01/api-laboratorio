@@ -34,7 +34,7 @@ const computadorasDisponibles = async (request, response)=>{
                     SELECT computadoras.id_computadora, computadoras.tipo_computadora, computadoras.descripcion_computadora,
                     computadoras.estado_computadora, computadoras.id_laboratorio
                     FROM computadoras
-                    WHERE computadoras.id_computadora 
+                    WHERE computadoras.ihod_computadora 
                     NOT IN (SELECT registros.id_computadora FROM registros WHERE registros.id_horario = ${id_horario});
                     `);
 

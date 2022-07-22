@@ -19,7 +19,7 @@ const index = async(request, response) => {
         }
 
         const connection = await getConnection();
-        const result = await connection.query("SELECT * FROM materias");
+        const result = await connection.query("SELECT * FROM docentes");
         // response.send("DIMENCION"+result.length)
         if(result.length>0){
             response.json({
@@ -53,7 +53,7 @@ const getOne = async(request, response) =>{
         }
 
         const connection = await getConnection();
-        const result = await connection.query("SELECT * FROM materias WHERE id_materia = ?", id);
+        const result = await connection.query("SELECT * FROM docentes WHERE id_materia = ?", id);
         // response.send("DIMENCION"+result.length)
         if(result.length>0){
             response.json({
@@ -106,7 +106,7 @@ const registrar = async(request, response)=>{
         };
 
         const connection = await getConnection()
-        await connection.query("INSERT INTO materias SET ?", docente);
+        await connection.query("INSERT INTO docentes SET ?", docente);
         response.json({ message: "success" });
 
     } catch (error) {
@@ -148,11 +148,11 @@ const actualizar = async (request, response)=>{
         };
 
         const connection = await getConnection()
-        const result = await connection.query("UPDATE materias SET ? WHERE id_materia = ?", [docente, id])
+        const result = await connection.query("UPDATE docentes SET ? WHERE id_materia = ?", [docente, id])
         if(result.affectedRows !== 0){
 			response.json({message: "success"})
 		}else{
-			response.json({message: "No usar contraseñas anteriores"})
+			response.json({message: "No se pudo actualizar"})
 		}
 
     } catch (error) {
@@ -179,11 +179,11 @@ const eliminar = async (request, response)=>{
         var {id} = request.params
 
         const connection = await getConnection()
-        const result = await connection.query("DELETE FROM materias WHERE id_materia = ?", id)
+        const result = await connection.query("DELETE FROM docentes WHERE id_docentes = ?", id)
         if(result.affectedRows !== 0){
 			response.json({message: "success"})
 		}else{
-			response.json({message: "No usar contraseñas anteriores"})
+			response.json({message: "No se puede eliminar"})
 		}
 
     } catch (error) {

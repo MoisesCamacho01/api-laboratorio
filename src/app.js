@@ -14,6 +14,8 @@ import semestres from "./routes/semestre.routes"
 import matriculas from "./routes/matriculas.routes"
 import horarios from "./routes/horarios.routes"
 import computadoras from "./routes/computadoras.routes"
+import reportes from "./routes/reportes.routes"
+import laboratorios from "./routes/laboratorio.routes"
 
 //CORS
 const cors = require('cors');
@@ -49,5 +51,7 @@ app.use("/semestres", semestres)
 app.use("/matriculas", matriculas)
 app.use("/horarios", horarios)
 app.use("/computadoras", computadoras)
+app.use("/reportes", reportes)
+app.use("/laboratorios", laboratorios)
 
 export default app;

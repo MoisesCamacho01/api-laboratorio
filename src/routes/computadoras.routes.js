@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { methods as computadorasController } from "../controllers/computadoras,controller";
+import { methods as computadorasController } from "../controllers/computadoras.controller";
 import { methods as funciones } from "../controllers/funciones.controller";
 
 const router = Router();
@@ -11,7 +11,7 @@ router.delete('/:id', funciones.verifyToken, computadorasController.eliminar);
 router.post('/registrar', funciones.verifyToken, computadorasController.registrar);
 
 // filtro
-router.delete('/laboratorio/:id', funciones.verifyToken, computadorasController.porlaboratorio);
+// router.delete('/laboratorio/:id', funciones.verifyToken, computadorasController.porlaboratorio);
 
 
 export default router;

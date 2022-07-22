@@ -14,17 +14,18 @@ import semestres from "./routes/semestre.routes"
 import matriculas from "./routes/matriculas.routes"
 import horarios from "./routes/horarios.routes"
 import computadoras from "./routes/computadoras.routes"
+import laboratorios from "./routes/laboratorio.routes"
 
 //CORS
 const cors = require('cors');
 
-const app=express();
+const app = express();
 app.use(cors())
 app.use(express.json());
 
 
 // setting 
-const puerto  = process.env.PORT || 4000;
+const puerto = process.env.PORT || 4000;
 
 app.set("port", puerto);
 
@@ -35,7 +36,7 @@ app.use(morgan("dev"));
 app.use(express.static('views'));
 
 //Routes
-app.use("/api",language) //cambio 
+app.use("/api", language) //cambio 
 app.use("/auth", auth)
 app.use("/send", sendEmail)
 app.use("/usuario", usuario)
@@ -49,5 +50,6 @@ app.use("/semestres", semestres)
 app.use("/matriculas", matriculas)
 app.use("/horarios", horarios)
 app.use("/computadoras", computadoras)
+app.use("/laboratorios", laboratorios)
 
 export default app;

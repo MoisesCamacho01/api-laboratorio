@@ -220,7 +220,5 @@ export const methods = {
     registrar,
     actualizar,
     eliminar,
-    getOne,
-    porLaboratorio,
-    porHorario
+    getOne
 };

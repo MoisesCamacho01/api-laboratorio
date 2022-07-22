@@ -1,28 +1,5 @@
-import {getConnection} from "./../database/database";
+import {getConnection} from './../database/database';
 import jwt from "jsonwebtoken";
-
-const encontrarEstudiante = async (request, response)=>{
-    try {
-        const identificacion_estudiante = request.body.identificacion_estudiante;
-        const connection = await getConnection();
-        const result = await connection.query('SELECT * FROM estudiantes WHERE identificacion_estudiante=?', identificacion_estudiante);
-
-        if(typeof result[0] !== 'undefined'){
-            var $data = {
-                nombre: result[0].nombre_estudiante,
-                apellido: result[0].apellido_estudiante,
-                email: result[0].correo_estudiante,
-                message:"success"
-            };
-            response.json($data);
-        }else{
-            response.json({message: "Usuario no encontrado"})
-        }
-        
-    } catch (error) {
-        response.json({message: "A ocurrido un problema con tu petición, parece que el servidor no responde inténtalo mas tarde ("+error.message+")"})
-    }
-}
 
 const index = async(request, response) => {
     try {
@@ -42,8 +19,7 @@ const index = async(request, response) => {
         }
 
         const connection = await getConnection();
-        const result = await connection.query("SELECT * FROM estudiantes");
-        // response.send("DIMENCION"+result.length)
+        const result = await connection.query("SELECT * FROM computadoras");
         if(result.length>0){
             response.json({
                 data: result,
@@ -76,7 +52,7 @@ const getOne = async(request, response) =>{
         }
 
         const connection = await getConnection();
-        const result = await connection.query("SELECT * FROM estudiantes WHERE id_estudiante = ?", id);
+        const result = await connection.query("SELECT * FROM computadoras WHERE id_computadora = ?", id);
         // response.send("DIMENCION"+result.length)
         if(result.length>0){
             response.json({
@@ -107,29 +83,40 @@ const registrar = async(request, response)=>{
             response.json({message: "A ocurrido un pequeño problema"})
         }
 
-        var {identificacion_estudiante, 
-            correo_estudiante, 
-            nombre_estudiante, 
-            apellido_estudiante, 
-            id_carrera} = request.body;
+        var {tipo_computadora, 
+            descripcion_computadora, 
+            fecha_alta_computadora, 
+            fecha_baja_computadora,
+            estado_computadora,
+            fecha_compra_computadora,
+            costo_computadora, 
+            id_laboratorio} = request.body;
 
-        if((identificacion_estudiante === undefined) || 
-        (correo_estudiante === undefined) ||
-        (nombre_estudiante === undefined) ||
-        (apellido_estudiante === undefined) ||
-        (id_carrera === undefined)){
+        if((tipo_computadora === undefined) || 
+        (descripcion_computadora === undefined) ||
+        (fecha_alta_computadora === undefined) ||
+        (fecha_baja_computadora === undefined) ||
+        (fecha_compra_computadora === undefined) ||
+        (costo_computadora === undefined) ||
+        (id_laboratorio === undefined)
+        ){
             response.json({message: "Llena todos los campos"})
         }
-        const estudiante = {
-            identificacion_estudiante, 
-            correo_estudiante, 
-            nombre_estudiante, 
-            apellido_estudiante, 
-            id_carrera
+        value_computadora = "ni idea"
+        const computadora = {
+            tipo_computadora,
+            descripcion_computadora,
+            fecha_alta_computadora,
+            fecha_baja_computadora,
+            estado_computadora,
+            fecha_compra_computadora,
+            costo_computadora,
+            value_computadora,
+            id_laboratorio
         };
 
         const connection = await getConnection()
-        await connection.query("INSERT INTO estudiantes SET ?", estudiante);
+        await connection.query("INSERT INTO computadoras SET ?", computadora);
         response.json({ message: "success" });
 
     } catch (error) {
@@ -153,31 +140,39 @@ const actualizar = async (request, response)=>{
             response.json({message: "A ocurrido un pequeño problema"})
         }
 
+        var {tipo_computadora, 
+            descripcion_computadora, 
+            fecha_alta_computadora, 
+            fecha_baja_computadora,
+            estado_computadora,
+            fecha_compra_computadora,
+            costo_computadora, 
+            id_laboratorio} = request.body;
+            
         var {id} = request.params
-        var {identificacion_estudiante, 
-            correo_estudiante, 
-            nombre_estudiante, 
-            apellido_estudiante, 
-            id_carrera} = request.body;
-
-        if((identificacion_estudiante === undefined) || 
-        (correo_estudiante === undefined) ||
-        (nombre_estudiante === undefined) ||
-        (apellido_estudiante === undefined) ||
-        (id_carrera === undefined)){
+        if((tipo_computadora === undefined) || 
+        (descripcion_computadora === undefined) ||
+        (fecha_alta_computadora === undefined) ||
+        (fecha_baja_computadora === undefined) ||
+        (fecha_compra_computadora === undefined) ||
+        (costo_computadora === undefined) ||
+        (id_laboratorio === undefined)){
             response.json({message: "Llena todos los campos"})
         }
-
-        const estudiante = {
-            identificacion_estudiante, 
-            correo_estudiante, 
-            nombre_estudiante, 
-            apellido_estudiante, 
-            id_carrera
+        const computadora = {
+            tipo_computadora,
+            descripcion_computadora,
+            fecha_alta_computadora,
+            fecha_baja_computadora,
+            estado_computadora,
+            fecha_compra_computadora,
+            costo_computadora,
+            value_computadora,
+            id_laboratorio
         };
 
         const connection = await getConnection()
-        const result = await connection.query("UPDATE estudiantes SET ? WHERE id_estudiante = ?", [estudiante, id])
+        const result = await connection.query("UPDATE computadoras SET ? WHERE id_computadora = ?", [computadora, id])
         if(result.affectedRows !== 0){
 			response.json({message: "success"})
 		}else{
@@ -208,7 +203,7 @@ const eliminar = async (request, response)=>{
         var {id} = request.params
 
         const connection = await getConnection()
-        const result = await connection.query("DELETE FROM estudiantes WHERE id_estudiante = ?", id)
+        const result = await connection.query("DELETE FROM computadoras WHERE id_computadora = ?", id)
         if(result.affectedRows !== 0){
 			response.json({message: "success"})
 		}else{
@@ -221,10 +216,11 @@ const eliminar = async (request, response)=>{
 }
 
 export const methods = {
-    encontrarEstudiante,
     index,
     registrar,
     actualizar,
     eliminar,
-    getOne
-}
+    getOne,
+    porLaboratorio,
+    porHorario
+};

@@ -18,8 +18,7 @@ const index = async(request, response) => {
         }
 
         const connection = await getConnection();
-        const result = await connection.query("SELECT * FROM laboratorios");
-        // response.send("DIMENCION"+result.length)
+        const result = await connection.query("SELECT * FROM asignacion_materias");
         if(result.length>0){
             response.json({
                 data: result,
@@ -52,8 +51,7 @@ const getOne = async(request, response) =>{
         }
 
         const connection = await getConnection();
-        const result = await connection.query("SELECT * FROM laboratorios WHERE id_laboratorio = ?", id);
-        // response.send("DIMENCION"+result.length)
+        const result = await connection.query("SELECT * FROM asignacion_materias WHERE id_asignacion = ?", id);
         if(result.length>0){
             response.json({
                 data: result,
@@ -83,57 +81,18 @@ const registrar = async(request, response)=>{
             response.json({message: "A ocurrido un pequeño problema"})
         }
 
-        var {nombre_laboratorio, piso_laboratorio} = request.body;
-        if((nombre_laboratorio === undefined) || (piso_laboratorio === undefined)){
+        var {id_materia, id_docente} = request.body;
+        if((nombre_materia === undefined) || (cantidad_horas_materia === undefined)){
             response.json({message: "Llena todos los campos"})
         }
-        const carrera = {
-            nombre_laboratorio,
-            piso_laboratorio
+        const asignacion = {
+            id_materia,
+            id_docente
         };
 
         const connection = await getConnection()
-        await connection.query("INSERT INTO laboratorios SET ?", carrera);
+        await connection.query("INSERT INTO asignacion_materias SET ?", asignacion);
         response.json({ message: "success" });
-
-    } catch (error) {
-        response.json({message: "A ocurrido un problema con tu petición, parece que el servidor no responde inténtalo mas tarde ("+error.message+")"})
-    }
-}
-
-const actualizar = async (request, response)=>{
-    try {
-        var userID = 0;
-        jwt.verify(request.token, 'secretKey', (error, dataUser) =>{
-            if(error){
-                response.json(error.message)
-            }else{
-                userID = dataUser.user.id;
-            }
-        })
-        var token = request.token;
-
-        if(token === undefined){
-            response.json({message: "A ocurrido un pequeño problema"})
-        }
-
-        var {nombre_laboratorio, piso_laboratorio} = request.body;
-        var {id} = request.params
-        if((nombre_laboratorio === undefined) || (piso_laboratorio === undefined)){
-            response.json({message: "Llena todos los campos"})
-        }
-        const carrera = {
-            nombre_laboratorio,
-            piso_laboratorio
-        };
-
-        const connection = await getConnection()
-        const result = await connection.query("UPDATE laboratorios SET ? WHERE id_laboratorio = ?", [carrera, id])
-        if(result.affectedRows !== 0){
-			response.json({message: "success"})
-		}else{
-			response.json({message: "No usar contraseñas anteriores"})
-		}
 
     } catch (error) {
         response.json({message: "A ocurrido un problema con tu petición, parece que el servidor no responde inténtalo mas tarde ("+error.message+")"})
@@ -159,7 +118,7 @@ const eliminar = async (request, response)=>{
         var {id} = request.params
 
         const connection = await getConnection()
-        const result = await connection.query("DELETE FROM laboratorios WHERE id_laboratorio = ?", id)
+        const result = await connection.query("DELETE FROM asignacion_materias WHERE id_asignacion = ?", id)
         if(result.affectedRows !== 0){
 			response.json({message: "success"})
 		}else{
@@ -174,7 +133,6 @@ const eliminar = async (request, response)=>{
 export const methods = {
     index,
     registrar,
-    actualizar,
     eliminar,
     getOne
 };

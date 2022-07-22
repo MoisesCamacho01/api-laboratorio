@@ -1,28 +1,5 @@
-import {getConnection} from "./../database/database";
+import {getConnection} from './../database/database';
 import jwt from "jsonwebtoken";
-
-const encontrarEstudiante = async (request, response)=>{
-    try {
-        const identificacion_estudiante = request.body.identificacion_estudiante;
-        const connection = await getConnection();
-        const result = await connection.query('SELECT * FROM estudiantes WHERE identificacion_estudiante=?', identificacion_estudiante);
-
-        if(typeof result[0] !== 'undefined'){
-            var $data = {
-                nombre: result[0].nombre_estudiante,
-                apellido: result[0].apellido_estudiante,
-                email: result[0].correo_estudiante,
-                message:"success"
-            };
-            response.json($data);
-        }else{
-            response.json({message: "Usuario no encontrado"})
-        }
-        
-    } catch (error) {
-        response.json({message: "A ocurrido un problema con tu petición, parece que el servidor no responde inténtalo mas tarde ("+error.message+")"})
-    }
-}
 
 const index = async(request, response) => {
     try {
@@ -42,7 +19,7 @@ const index = async(request, response) => {
         }
 
         const connection = await getConnection();
-        const result = await connection.query("SELECT * FROM estudiantes");
+        const result = await connection.query("SELECT * FROM horarios");
         // response.send("DIMENCION"+result.length)
         if(result.length>0){
             response.json({
@@ -76,7 +53,7 @@ const getOne = async(request, response) =>{
         }
 
         const connection = await getConnection();
-        const result = await connection.query("SELECT * FROM estudiantes WHERE id_estudiante = ?", id);
+        const result = await connection.query("SELECT * FROM horarios WHERE id_horario = ?", id);
         // response.send("DIMENCION"+result.length)
         if(result.length>0){
             response.json({
@@ -107,29 +84,27 @@ const registrar = async(request, response)=>{
             response.json({message: "A ocurrido un pequeño problema"})
         }
 
-        var {identificacion_estudiante, 
-            correo_estudiante, 
-            nombre_estudiante, 
-            apellido_estudiante, 
-            id_carrera} = request.body;
-
-        if((identificacion_estudiante === undefined) || 
-        (correo_estudiante === undefined) ||
-        (nombre_estudiante === undefined) ||
-        (apellido_estudiante === undefined) ||
-        (id_carrera === undefined)){
+        var {id_laboratorio, id_semestre, hora_inicio, hora_fin, id_asignacion, fecha} = request.body;
+        if((hora_inicio === undefined) || 
+        (hora_fin === undefined) ||
+        (fecha === undefined) ||
+        (id_laboratorio === undefined)||
+        (id_semestre === undefined)||
+        (id_asignacion === undefined)
+        ){
             response.json({message: "Llena todos los campos"})
         }
-        const estudiante = {
-            identificacion_estudiante, 
-            correo_estudiante, 
-            nombre_estudiante, 
-            apellido_estudiante, 
-            id_carrera
+        const hora = {
+            hora_inicio,
+            hora_fin,
+            fecha,
+            id_laboratorio,
+            id_asignacion,
+            id_semestre
         };
 
         const connection = await getConnection()
-        await connection.query("INSERT INTO estudiantes SET ?", estudiante);
+        await connection.query("INSERT INTO horarios SET ?", hora);
         response.json({ message: "success" });
 
     } catch (error) {
@@ -153,31 +128,28 @@ const actualizar = async (request, response)=>{
             response.json({message: "A ocurrido un pequeño problema"})
         }
 
+        var {id_laboratorio, id_semestre, hora_inicio, hora_fin, id_asignacion, fecha} = request.body;
         var {id} = request.params
-        var {identificacion_estudiante, 
-            correo_estudiante, 
-            nombre_estudiante, 
-            apellido_estudiante, 
-            id_carrera} = request.body;
-
-        if((identificacion_estudiante === undefined) || 
-        (correo_estudiante === undefined) ||
-        (nombre_estudiante === undefined) ||
-        (apellido_estudiante === undefined) ||
-        (id_carrera === undefined)){
+        if((id_laboratorio === undefined) || 
+        (id_semestre === undefined) ||
+        (id_asignacion === undefined) ||
+        (hora_fin === undefined) ||
+        (hora_inicio === undefined) ||
+        (fecha === undefined)
+        ){
             response.json({message: "Llena todos los campos"})
         }
-
-        const estudiante = {
-            identificacion_estudiante, 
-            correo_estudiante, 
-            nombre_estudiante, 
-            apellido_estudiante, 
-            id_carrera
+        const hora = {
+            hora_inicio,
+            hora_fin,
+            fecha,
+            id_laboratorio,
+            id_asignacion,
+            id_semestre
         };
 
         const connection = await getConnection()
-        const result = await connection.query("UPDATE estudiantes SET ? WHERE id_estudiante = ?", [estudiante, id])
+        const result = await connection.query("UPDATE horarios SET ? WHERE id_horario = ?", [hora, id])
         if(result.affectedRows !== 0){
 			response.json({message: "success"})
 		}else{
@@ -208,7 +180,7 @@ const eliminar = async (request, response)=>{
         var {id} = request.params
 
         const connection = await getConnection()
-        const result = await connection.query("DELETE FROM estudiantes WHERE id_estudiante = ?", id)
+        const result = await connection.query("DELETE FROM horarios WHERE id_horario = ?", id)
         if(result.affectedRows !== 0){
 			response.json({message: "success"})
 		}else{
@@ -221,10 +193,9 @@ const eliminar = async (request, response)=>{
 }
 
 export const methods = {
-    encontrarEstudiante,
     index,
     registrar,
     actualizar,
     eliminar,
     getOne
-}
+};

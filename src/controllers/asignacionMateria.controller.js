@@ -18,7 +18,7 @@ const index = async(request, response) => {
         }
 
         const connection = await getConnection();
-        const result = await connection.query("SELECT * FROM asignacion_materias");
+        const result = await connection.query("SELECT *, (SELECT materias.nombre_materia FROM materias WHERE materias.id_materia = t1.id_materia) as nombre_materia FROM asignacion_materias t1 WHERE EXISTS (SELECT NULL FROM materias t2 WHERE t2.id_materia = t1.id_materia)");
         if(result.length>0){
             response.json({
                 data: result,
@@ -82,7 +82,7 @@ const registrar = async(request, response)=>{
         }
 
         var {id_materia, id_docente} = request.body;
-        if((nombre_materia === undefined) || (cantidad_horas_materia === undefined)){
+        if((id_materia === undefined) || (id_docente === undefined)){
             response.json({message: "Llena todos los campos"})
         }
         const asignacion = {
@@ -122,7 +122,7 @@ const eliminar = async (request, response)=>{
         if(result.affectedRows !== 0){
 			response.json({message: "success"})
 		}else{
-			response.json({message: "No usar contraseñas anteriores"})
+			response.json({message: "No se puede eliminar tu registro"})
 		}
 
     } catch (error) {

@@ -19,7 +19,8 @@ const index = async (request, response) => {
         }
 
         const connection = await getConnection();
-        const result = await connection.query("SELECT * FROM computadoras");
+        const result = await connection.query(`SELECT computadoras.id_computadora, computadoras.tipo_computadora, computadoras.descripcion_computadora, computadoras.fecha_alta_computadora, computadoras.fecha_baja_computadora, computadoras.estado_computadora, computadoras.fecha_compra_computadora, computadoras.costo_computadora, (SELECT laboratorios.nombre_laboratorio FROM laboratorios WHERE laboratorios.id_laboratorio = computadoras.id_laboratorio) as id_laboratorio
+        FROM computadoras`);
         if (result.length > 0) {
             response.json({
                 data: result,
@@ -52,7 +53,7 @@ const getOne = async (request, response) => {
         }
 
         const connection = await getConnection();
-        const result = await connection.query("SELECT * FROM computadoras WHERE id_computadora = ?", id);
+        const result = await connection.query("SELECT *, (SELECT laboratorios.nombre_laboratorio FROM laboratorios WHERE laboratorios.id_laboratorio = computadora.id_laboratorio) as nombre_laboratorio FROM computadoras WHERE id_computadora = ?", id);
         // response.send("DIMENCION"+result.length)
         if (result.length > 0) {
             response.json({
@@ -102,7 +103,7 @@ const registrar = async (request, response) => {
         ) {
             response.json({ message: "Llena todos los campos" })
         }
-        // value_computadora = "ni idea"
+        var value_computadora = "ni idea"
         const computadora = {
             tipo_computadora,
             descripcion_computadora,
@@ -111,7 +112,7 @@ const registrar = async (request, response) => {
             estado_computadora,
             fecha_compra_computadora,
             costo_computadora,
-            value_computadora: 'ni idea',
+            value_computadora,
             id_laboratorio
         };
 

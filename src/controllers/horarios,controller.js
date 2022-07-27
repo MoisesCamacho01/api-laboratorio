@@ -19,7 +19,11 @@ const index = async(request, response) => {
         }
 
         const connection = await getConnection();
-        const result = await connection.query("SELECT * FROM horarios");
+        const result = await connection.query(`SELECT horarios.id_horario, horarios.hora_inicio, horarios.hora_fin, horarios.dia, 
+        (SELECT (SELECT CONCAT(docentes.nombre_docente, ' ', docentes.apellido_docente) FROM docentes WHERE docentes.id_docente = asignacion_materias.id_docente) FROM asignacion_materias WHERE asignacion_materias.id_asignacion = horarios.id_asignacion) as nombre_docente,
+        (SELECT laboratorios.nombre_laboratorio FROM laboratorios WHERE laboratorios.id_laboratorio = horarios.id_laboratorio) as nombre_laboratorio,
+        (SELECT semestres.nombre_semestre FROM semestres WHERE semestres.id_semestre = horarios.id_semestre) as nombre_semestre
+        FROM horarios`);
         // response.send("DIMENCION"+result.length)
         if(result.length>0){
             response.json({

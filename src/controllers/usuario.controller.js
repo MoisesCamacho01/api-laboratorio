@@ -104,13 +104,11 @@ const insertar = async(request, response)=>{
 
 		var tipo_usuario = "estudiante";
 		var celular_usuario = '0';
-        var fecha_baja = '';
+        var id_administrador = 0
 
-        
-
-        //INDENFICAR 
+        //INDENTIFICAR 
         const connection = await getConnection();
-        const result = await connection.query('SELECT id_estudiante FROM estudiantes WHERE identificacion_estudiante=? OR correo_estudiante=?', [identificacion_usuario, correo_usuario]);
+        const result = await connection.query('SELECT id_estudiante FROM estudiantes WHERE identificacion_estudiante=? AND correo_estudiante=?', [identificacion_usuario, correo_usuario]);
 
         if(typeof result[0] !== 'undefined'){
             const idUser = result[0].id_estudiante;
@@ -119,10 +117,10 @@ const insertar = async(request, response)=>{
                 var id_estudiante = idUser;
                 const usuario = {
                     id_estudiante,
+                    id_administrador,
                     tipo_usuario,
                     password_usuario,
                     celular_usuario,
-                    fecha_baja
                 };
                 await connection.query("INSERT INTO usuarios SET ?", usuario);
                 response.json({ message: "success" });
@@ -174,10 +172,68 @@ const nivel = async (request, response)=>{
     }
 }
 
+const usuarioDatos = async (request, response)=>{
+    try {
+        var userID = 0;
+        jwt.verify(request.token, 'secretKey', (error, dataUser) =>{
+            if(error){
+                response.json(error.message)
+            }else{
+                userID = dataUser.user.id;
+            }
+        })
+        var token = request.token;
+
+        if(token === undefined){
+            response.json({message: "A ocurrido un problema"})
+        }
+
+        var connection = await getConnection();
+        var usuarios = await connection.query("SELECT id_estudiante, id_administrador FROM usuarios WHERE id_usuario = ?", userID)
+        var result = []
+        var quien = "" 
+        if (usuarios.length>0) {
+            if(usuarios[0].id_estudiante > 0){
+                result = await connection.query("SELECT * FROM estudiantes WHERE id_estudiante = ?", usuarios[0].id_estudiante)
+                quien = "estudiante"
+            }else{
+                result = await connection.query("SELECT * FROM administradores WHERE id_administrador = ?", usuarios[0].id_administrador)
+                quien = "admin"
+            }
+        }
+        
+        if(usuarios.length > 0){
+            let datos = []
+            if(quien === "admin"){
+                datos = {
+                    "usuarios": result[0].nombre_administrador + " " + result[0].apellido_administrador,
+                    "correo": result[0].correo_administrador
+                }
+            }else{
+                datos = {
+                    "usuarios": result[0].nombre_estudiante + " " + result[0].apellido_estudiante,
+                    "correo": result[0].correo_estudiante
+                }
+            }
+            response.json({
+                data: datos,
+                message: "success"
+            })
+            
+        }else{
+            response.json({message:"Error en tus credenciales de acceso"});
+        }
+    } catch (error) {
+        response.json({message: "A ocurrido un problema con tu petición, parece que el servidor no responde inténtalo mas tarde ("+error.message+")"})
+    }
+        
+}
+
 export const methods = {
     login,
     logout,
     password,
 	insertar,
-    nivel
+    nivel,
+    usuarioDatos
 }

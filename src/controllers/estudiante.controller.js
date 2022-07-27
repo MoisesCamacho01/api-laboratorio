@@ -42,8 +42,7 @@ const index = async (request, response) => {
         }
 
         const connection = await getConnection();
-        const result = await connection.query("SELECT * FROM estudiantes");
-        // response.send("DIMENCION"+result.length)
+        const result = await connection.query("SELECT estudiantes.id_estudiante, estudiantes.identificacion_estudiante, estudiantes.correo_estudiante, estudiantes.nombre_estudiante, estudiantes.apellido_estudiante, (SELECT carreras.nombre_carrera FROM carreras WHERE carreras.id_carrera = estudiantes.id_carrera) as id_carrera FROM estudiantes");
         if (result.length > 0) {
             response.json({
                 data: result,
@@ -76,7 +75,7 @@ const getOne = async (request, response) => {
         }
 
         const connection = await getConnection();
-        const result = await connection.query("SELECT * FROM estudiantes WHERE id_estudiante = ?", id);
+        const result = await connection.query(`SELECT estudiantes.id_estudiante, estudiantes.identificacion_estudiante, estudiantes.correo_estudiante, estudiantes.nombre_estudiante, estudiantes.apellido_estudiante, (SELECT carreras.nombre_carrera FROM carreras WHERE carreras.id_carrera = estudiantes.id_carrera) as id_carrera FROM estudiante WHERE id_estudiante = ?`, id);
         // response.send("DIMENCION"+result.length)
         if (result.length > 0) {
             response.json({

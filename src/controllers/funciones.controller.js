@@ -20,45 +20,27 @@ const verifyToken = (request, response, next)=>{
 
 const send = async (request, response)=>{
     try {
-        const {usuario} = request.body;
-        if(usuario === undefined ){
-            response.status(400).json({message: "Llena todas las credenciales"})
-        }
+
+        var {email} = request.body
+        
         const connection = await getConnection();
-        const result = await connection.query('SELECT correo_usuario FROM usuarios WHERE correo_usuario=?', usuario);
-        if(result[0].correo_usuario !== ""){
-            
-            const dataUser = {
-                email: result[0].correo_usuario
+
+        const result = await connection.query('SELECT * FROM estudiantes WHERE correo_estudiante = ?',email)
+
+        const usuario = await connection.query('SELECT * FROM usuarios WHERE id_estudiante = ?', result[0].id_estudiante)
+
+        if(usuario.length > 0 ){
+            var dataUser = {
+                id: usuario[0].id_usuario
             }
-            // jwt.sign({user: dataUser},'secretKey', (error, token)=>{
-                
-            // });
-            // const transporter = nodemailer.createTransport({
-            //     pool: true,
-            //     host: "mail.wfss-ec.com",
-            //     port: 465,
-            //     secure: false,
-            //     auth:{
-            //         user: 'apiemails@wfss-ec.com',
-            //         pass: 'P5wLvK01qCSn'
-            //     },
-            //     tls:{
-            //         rejectUnauthorized: false
-            //     }
-            // });
-
-
-            // const info = await transporter.sendMail({
-            //     from:"API SERVER",
-            //     to: "egcgion15@gmail.com",
-            //     subject: "Api",
-            //     text: "Enviado",
-            // })
-
-            // console.log('message '+ info.messageId);
-
-            response.send("Enviado");
+            jwt.sign({user: dataUser},'secretKey', (error, token)=>{
+                response.json({
+                    token,
+                    message: "success"
+                })
+            });
+        }else{
+            response.json({message: "NO SE HA PODIDO ENVIAR EL EMAIL"})
         }
 
     } catch (error) {

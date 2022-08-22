@@ -18,7 +18,7 @@ const index = async(request, response) => {
         }
 
         const connection = await getConnection();
-        const result = await connection.query("SELECT * FROM semestres");
+        const result = await connection.query("SELECT *, (SELECT carreras.nombre_carrera FROM carreras WHERE carreras.id_carrera = semestres.id_carrera) as nombre_carrera FROM semestres");
         // response.send("DIMENCION"+result.length)
         if(result.length>0){
             response.json({
@@ -52,7 +52,7 @@ const getOne = async(request, response) =>{
         }
 
         const connection = await getConnection();
-        const result = await connection.query("SELECT * FROM semestres WHERE id_semestre = ?", id);
+        const result = await connection.query("SELECT *, (SELECT carreras.nombre_carrera FROM carreras WHERE carreras.id_carrera = semestres.id_carrera) as nombre_carrera FROM semestres WHERE id_semestre = ?", id);
         // response.send("DIMENCION"+result.length)
         if(result.length>0){
             response.json({
@@ -124,6 +124,7 @@ const actualizar = async (request, response)=>{
 
         var {nombre_semestre, codigo_semestre, paralelo_semestre, id_carrera} = request.body;
         var {id} = request.params
+
         if((codigo_semestre === undefined) ||
          (nombre_semestre === undefined) || 
          (paralelo_semestre === undefined) || 
@@ -139,7 +140,7 @@ const actualizar = async (request, response)=>{
         };
 
         const connection = await getConnection()
-        const result = await connection.query("UPDATE semestres SET ? WHERE id_materia = ?", [semestre, id])
+        const result = await connection.query("UPDATE semestres SET ? WHERE id_semestre = ?", [semestre, id])
         if(result.affectedRows !== 0){
 			response.json({message: "success"})
 		}else{

@@ -103,13 +103,16 @@ const hay = async(request, response) =>{
         })
         var token = request.token;
         // response.json(token)
+        var {fechaActual} = request.body
 
-        if(token === undefined){
+        if(token === undefined || fechaActual === undefined){
             response.json({message: "A ocurrido un pequeño problema"})
         }
 
+        
+
         const connection = await getConnection();
-        const result = await connection.query("SELECT registros.fecha_registro, registros.hora_registro, (SELECT horarios.hora_inicio FROM horarios WHERE horarios.id_horario = registros.id_horario) AS hora_inicio, (SELECT horarios.hora_fin FROM horarios WHERE horarios.id_horario = registros.id_horario) AS hora_fin FROM `registros`WHERE id_usuario = ? order by id_registro DESC LIMIT 1", userID);
+        const result = await connection.query("SELECT registros.fecha_registro, registros.hora_registro, (SELECT horarios.hora_inicio FROM horarios WHERE horarios.id_horario = registros.id_horario) AS hora_inicio, (SELECT horarios.hora_fin FROM horarios WHERE horarios.id_horario = registros.id_horario) AS hora_fin FROM registros WHERE registros.id_usuario = "+userID+" AND registros.fecha_registro = '"+fechaActual+"' order by registros.id_registro DESC LIMIT 1");
         // response.send("DIMENCION"+result.length)
         if(result.length>0){
             response.json({

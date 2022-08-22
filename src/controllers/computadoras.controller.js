@@ -53,7 +53,7 @@ const getOne = async (request, response) => {
         }
 
         const connection = await getConnection();
-        const result = await connection.query("SELECT *, (SELECT laboratorios.nombre_laboratorio FROM laboratorios WHERE laboratorios.id_laboratorio = computadora.id_laboratorio) as nombre_laboratorio FROM computadoras WHERE id_computadora = ?", id);
+        const result = await connection.query("SELECT *, (SELECT laboratorios.nombre_laboratorio FROM laboratorios WHERE laboratorios.id_laboratorio = computadoras.id_laboratorio) as nombre_laboratorio, (SELECT laboratorios.id_laboratorio FROM laboratorios WHERE laboratorios.id_laboratorio = computadoras.id_laboratorio) as id_laboratorio FROM computadoras WHERE id_computadora = ?", id);
         // response.send("DIMENCION"+result.length)
         if (result.length > 0) {
             response.json({
@@ -160,6 +160,7 @@ const actualizar = async (request, response) => {
             (id_laboratorio === undefined)) {
             response.json({ message: "Llena todos los campos" })
         }
+        var value_computadora = "ni idea"
         const computadora = {
             tipo_computadora,
             descripcion_computadora,

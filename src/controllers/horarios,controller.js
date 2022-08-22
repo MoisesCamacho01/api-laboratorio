@@ -88,10 +88,10 @@ const registrar = async(request, response)=>{
             response.json({message: "A ocurrido un pequeño problema"})
         }
 
-        var {id_laboratorio, id_semestre, hora_inicio, hora_fin, id_asignacion, fecha} = request.body;
+        var {id_laboratorio, id_semestre, hora_inicio, hora_fin, id_asignacion, dia} = request.body;
         if((hora_inicio === undefined) || 
         (hora_fin === undefined) ||
-        (fecha === undefined) ||
+        (dia === undefined) ||
         (id_laboratorio === undefined)||
         (id_semestre === undefined)||
         (id_asignacion === undefined)
@@ -101,7 +101,7 @@ const registrar = async(request, response)=>{
         const hora = {
             hora_inicio,
             hora_fin,
-            fecha,
+            dia,
             id_laboratorio,
             id_asignacion,
             id_semestre
@@ -132,21 +132,21 @@ const actualizar = async (request, response)=>{
             response.json({message: "A ocurrido un pequeño problema"})
         }
 
-        var {id_laboratorio, id_semestre, hora_inicio, hora_fin, id_asignacion, fecha} = request.body;
+        var {id_laboratorio, id_semestre, hora_inicio, hora_fin, id_asignacion, dia} = request.body;
         var {id} = request.params
         if((id_laboratorio === undefined) || 
         (id_semestre === undefined) ||
         (id_asignacion === undefined) ||
         (hora_fin === undefined) ||
         (hora_inicio === undefined) ||
-        (fecha === undefined)
+        (dia === undefined)
         ){
             response.json({message: "Llena todos los campos"})
         }
         const hora = {
             hora_inicio,
             hora_fin,
-            fecha,
+            dia,
             id_laboratorio,
             id_asignacion,
             id_semestre
@@ -194,12 +194,15 @@ const eliminar = async (request, response)=>{
     } catch (error) {
         response.json({message: "A ocurrido un problema con tu petición, parece que el servidor no responde inténtalo mas tarde ("+error.message+")"})
     }
+
 }
+
+
 
 export const methods = {
     index,
     registrar,
     actualizar,
     eliminar,
-    getOne
+    getOne,
 };

@@ -53,7 +53,7 @@ const noAsignadas = async(request, response) => {
         }
 
         const connection = await getConnection();
-        const result = await connection.query("SELECT * FROM materias t1 WHERE NOT EXISTS (SELECT NULL FROM asignacion_materias t2 WHERE t2.id_materia = t1.id_materia)");
+        const result = await connection.query("SELECT * FROM materias t1 WHERE NOT EXISTS (SELECT NULL FROM asignacion_materias t2 WHERE t2.id_materia = t1.id_materia)", userID);
         // response.send("DIMENCION"+result.length)
         if(result.length>0){
             response.json({

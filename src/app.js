@@ -16,6 +16,7 @@ import horarios from "./routes/horarios.routes"
 import computadoras from "./routes/computadoras.routes"
 import reportes from "./routes/reportes.routes"
 import laboratorios from "./routes/laboratorio.routes"
+import otros from "./routes/otras.routes"
 
 //CORS
 const cors = require('cors');
@@ -53,5 +54,6 @@ app.use("/horarios", horarios)
 app.use("/computadoras", computadoras)
 app.use("/reportes", reportes)
 app.use("/laboratorios", laboratorios)
+app.use("/otros", otros)
 
 export default app;

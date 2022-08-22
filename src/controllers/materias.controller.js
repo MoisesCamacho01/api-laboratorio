@@ -212,5 +212,6 @@ export const methods = {
     actualizar,
     eliminar,
     getOne,
-    noAsignadas
+    noAsignadas,
+    
 };

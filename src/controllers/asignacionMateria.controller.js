@@ -131,9 +131,52 @@ const eliminar = async (request, response)=>{
     }
 }
 
+
+const registrarE = async(request, response)=>{
+    try {
+        var userID = 0;
+        jwt.verify(request.token, 'secretKey', (error, dataUser) =>{
+            if(error){
+                response.json(error.message)
+            }else{
+                userID = dataUser.user.id;
+            }
+        })
+        var token = request.token;
+
+        if(token === undefined){
+            response.json({message: "A ocurrido un pequeño problema"})
+        }
+
+        var {id_asignacion, tipo_matricula, id_semestre, id_estudiante} = request.body;
+        if((id_asignacion === undefined) ||
+        (id_semestre === undefined) || 
+        (id_estudiante === undefined) || 
+        (tipo_matricula === undefined)){
+            response.json({message: "Llena todos s campos"})
+        }
+        const asignacion = {
+            tipo_matricula,
+            id_estudiante,
+            id_semestre,
+            id_asignacion
+        };
+
+        const connection = await getConnection()
+        await connection.query("INSERT INTO matriculas SET ?", asignacion);
+        response.json({ message: "success" });
+
+    } catch (error) {
+        response.json({message: "A ocurrido un problema con tu petición, parece que el servidor no responde inténtalo mas tarde ("+error.message+")"})
+    }
+}
+
+
+
 export const methods = {
     index,
     registrar,
     eliminar,
-    getOne
+    getOne,
+    registrarE
 };

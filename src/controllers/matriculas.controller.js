@@ -18,8 +18,10 @@ const index = async(request, response) => {
             response.json({message: "A ocurrido un pequeño problema"})
         }
 
+        var {id} = request.params
+
         const connection = await getConnection();
-        const result = await connection.query("SELECT * FROM matriculas");
+        const result = await connection.query("SELECT matriculas.tipo_matricula, matriculas.id_estudiante, matriculas.id_semestre, (SELECT semestres.nombre_semestre FROM semestres WHERE semestres.id_semestre = matriculas.id_semestre) as nombre_semestre  FROM matriculas WHERE id_estudiante = ? GROUP BY id_semestre;", id);
         // response.send("DIMENCION"+result.length)
         if(result.length>0){
             response.json({
@@ -34,7 +36,7 @@ const index = async(request, response) => {
     }
 }
 
-const getOne = async(request, response) =>{
+const getAsignadas = async(request, response) =>{
     try {
         var userID = 0;
         jwt.verify(request.token, 'secretKey', (error, dataUser) =>{
@@ -45,16 +47,15 @@ const getOne = async(request, response) =>{
             }
         })
         var token = request.token;
-        var {id} = request.params
-        // response.json(token)
+        var {id, idSemestre} = request.params
 
         if(token === undefined){
             response.json({message: "A ocurrido un pequeño problema"})
         }
-
+        // let sql = "SELECT * FROM matriculas WHERE id_estudiante = "+id+" AND id_semestre = "+idSemestre+""
+        // response.send(sql);
         const connection = await getConnection();
-        const result = await connection.query("SELECT * FROM matriculas WHERE id_matricula = ?", id);
-        // response.send("DIMENCION"+result.length)
+        const result = await connection.query("SELECT *, (SELECT (SELECT materias.nombre_materia FROM materias WHERE materias.id_materia = asignacion_materias.id_materia) as nombre_materia FROM asignacion_materias WHERE asignacion_materias.id_asignacion = matriculas.id_asignacion ) as nombre_materia FROM matriculas WHERE id_estudiante = ? AND id_semestre = ?", [id, idSemestre]);
         if(result.length>0){
             response.json({
                 data: result,
@@ -184,5 +185,5 @@ export const methods = {
     registrar,
     actualizar,
     eliminar,
-    getOne
+    getAsignadas
 };
